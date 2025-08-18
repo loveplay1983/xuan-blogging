@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
-        tex2jax: {
+        tex2jax: {  
             inlineMath: [ ['$','$'], ["\\(","\\)"] ],
             processEscapes: true
         }
@@ -46,7 +46,7 @@
         </div>
     </nav>
     <!-- Add Audio Element (Hidden) -->
-    <audio id="bg-music" loop src="{{ url_for('static', filename='audio/Rain in Jiang (Violin Remix).mp3') }}"></audio>
+    <audio id="bg-music" loop src="{{ url_for('static', filename='audio/Rain in Jiang (Violin Remix).mp3') }}" ></audio>
     <div class="container mt-3">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
