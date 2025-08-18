@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Dashboard</h1>
+<h2>Your Posts</h2>
+<ul>
+    {% for post in posts %}
+    <li><a href="{{ url_for('main.post', post_id=post.id) }}">{{ post.title }}</a></li>
+    {% endfor %}
+</ul>
+<h2>Pending Comments</h2>
+{% for comment in comments_pending %}
+<div class="card mb-2">
+    <div class="card-body">
+        <p>{{ comment.body }}</p>
+        <p>On post: <a href="{{ url_for('main.post', post_id=comment.post_id) }}">{{ comment.post.title }}</a></p>
+        <form action="{{ url_for('main.approve_comment', comment_id=comment.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-success">Approve</button>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

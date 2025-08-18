@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
+<h1>{{ post.title }}</h1>
+<div class="post-content">{{ post_body_html | safe }}</div>
+<p><small>By {{ post.author.username }} on {{ post.timestamp.strftime('%Y-%m-%d') }}</small></p>
+{% if post.category %}<span class="badge bg-secondary">{{ post.category.name }}</span>{% endif %}
+{% if current_user == post.author %}
+<a href="{{ url_for('main.edit_post', post_id=post.id) }}" class="btn btn-secondary">Edit</a>
+<form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+</form>
+{% endif %}
+<hr>
+<h3>Comments</h3>
+<div class="comments-list">
+    {% for comment in comments %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <p>{{ comment.body }}</p>
+            <p><small>By {% if comment.author %}{{ comment.author.username }}{% else %}Guest{% endif %} on {{ comment.timestamp.strftime('%Y-%m-%d') }}</small></p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<h4>Add Comment</h4>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">{{ form.body(class="form-control") }}</div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+<script>
+    // Ensure MathJax renders equations after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof MathJax !== 'undefined') {
+            MathJax.typesetPromise();
+        }
+    });
+</script>
+{% endblock %}

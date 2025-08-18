@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Profile</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">{{ form.about_me.label }} {{ form.about_me(class="form-control") }}</div>
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+{% endblock %}

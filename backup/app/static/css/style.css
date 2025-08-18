@@ -1,0 +1,93 @@
+/* Global Styles */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa; /* Light gray for brightness */
+    color: #333; /* Dark text for clarity */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #007bff; /* Bright blue for headings */
+    margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Forms */
+.form-control {
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+}
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+}
+
+/* Cards (for posts/comments) */
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+    box-shadow: none; /* Concise: No shadows for simplicity */
+}
+.card-body {
+    padding: 1rem; /* Minimal padding */
+}
+
+/* Alerts/Flashes */
+.alert {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+}
+
+/* Pagination */
+.pagination .page-link {
+    color: #007bff;
+}
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+/* Custom Overrides for Brightness */
+.navbar-light .navbar-brand {
+    color: #007bff;
+}
+.navbar-light .navbar-nav .nav-link {
+    color: #333;
+}
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #007bff;
+}
