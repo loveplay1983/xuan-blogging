@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>Profile</h1>
-<form action="" method="post">
+{% if current_user.avatar or current_user.email %}
+<img src="{{ current_user.get_avatar(128) }}" alt="Profile Picture" class="img-thumbnail mb-3" style="max-width: 128px;">
+{% endif %}
+<div class="post-content mb-3">{{ about_html | safe }}</div>
+<h2>Edit Profile</h2>
+<form action="" method="post" enctype="multipart/form-data">  <!-- Add enctype for file upload -->
     {{ form.hidden_tag() }}
-    <div class="mb-3">{{ form.about_me.label }} {{ form.about_me(class="form-control") }}</div>
+    <div class="mb-3">{{ form.about_me.label }} {{ form.about_me(class="form-control", id="markdown-editor") }}</div>  <!-- Add id for EasyMDE if wanted -->
+    <div class="mb-3">{{ form.avatar.label }} {{ form.avatar(class="form-control") }}</div>
     {{ form.submit(class="btn btn-primary") }}
 </form>
 {% endblock %}

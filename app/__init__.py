@@ -3,6 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from config import Config
+import os
+from werkzeug.utils import secure_filename
+import bleach
+import markdown
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -12,6 +16,8 @@ login_manager.login_view = 'main.login'  # Updated to use blueprint prefix
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     db.init_app(app)
     migrate.init_app(app, db)
