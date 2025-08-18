@@ -1,8 +1,8 @@
 /* Global Styles */
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #f8f9fa; /* Light gray for brightness */
-    color: #333; /* Dark text for clarity */
+    background-color: #f8f9fa;
+    color: #333;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -10,7 +10,7 @@ body {
 
 /* Headings */
 h1, h2, h3 {
-    color: #007bff; /* Bright blue for headings */
+    color: #007bff;
     margin-bottom: 1rem;
 }
 
@@ -59,10 +59,10 @@ a:hover {
     border: 1px solid #e0e0e0;
     border-radius: 0.25rem;
     margin-bottom: 1rem;
-    box-shadow: none; /* Concise: No shadows for simplicity */
+    box-shadow: none;
 }
 .card-body {
-    padding: 1rem; /* Minimal padding */
+    padding: 1rem;
 }
 
 /* Alerts/Flashes */
@@ -90,4 +90,50 @@ a:hover {
 }
 .navbar-light .navbar-nav .nav-link:hover {
     color: #007bff;
+}
+
+/* Markdown Content */
+.post-content {
+    margin-bottom: 1rem;
+}
+.post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6 {
+    color: #007bff;
+    margin: 1rem 0;
+}
+.post-content p {
+    margin-bottom: 1rem;
+}
+.post-content ul, .post-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+.post-content blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    color: #555;
+    margin: 1rem 0;
+}
+.post-content code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+.post-content pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+}
+.post-content a {
+    color: #007bff;
+    text-decoration: underline;
+}
+.post-content a:hover {
+    color: #0056b3;
+}
+
+/* MathJax Equations */
+.post-content .MathJax {
+    font-size: 1.1em;
+    color: #333;
 }

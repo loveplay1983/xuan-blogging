@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 <h1>{{ post.title }}</h1>
-<p>{{ post.body }}</p>
+<div class="post-content">{{ post_body_html | safe }}</div>
 <p><small>By {{ post.author.username }} on {{ post.timestamp.strftime('%Y-%m-%d') }}</small></p>
 {% if post.category %}<span class="badge bg-secondary">{{ post.category.name }}</span>{% endif %}
 {% if current_user == post.author %}
@@ -28,4 +29,12 @@
     <div class="mb-3">{{ form.body(class="form-control") }}</div>
     {{ form.submit(class="btn btn-primary") }}
 </form>
+<script>
+    // Ensure MathJax renders equations after page load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof MathJax !== 'undefined') {
+            MathJax.typesetPromise();
+        }
+    });
+</script>
 {% endblock %}

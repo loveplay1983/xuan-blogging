@@ -1,40 +1,47 @@
-// // script.js - Basic enhancements for the blog
-
-// // Password matching validation for registration form
-// document.addEventListener('DOMContentLoaded', function() {
-//     const registerForm = document.querySelector('form[action="/register"]');
-//     if (registerForm) {
-//         registerForm.addEventListener('submit', function(event) {
-//             const password = document.querySelector('#password');
-//             const password2 = document.querySelector('#password2');
-//             if (password && password2 && password.value !== password2.value) {
-//                 alert('Passwords do not match!');
-//                 event.preventDefault(); // Prevent submit
-//             }
-//         });
-//     }
-
-//     // Smooth scrolling for anchor links (e.g., pagination)
-//     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-//         anchor.addEventListener('click', function(e) {
-//             e.preventDefault();
-//             const target = document.querySelector(this.getAttribute('href'));
-//             if (target) {
-//                 target.scrollIntoView({ behavior: 'smooth' });
-//             }
-//         });
-//     });
-// });
-
-
-
-
-
-
-
-// ajax
-
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize EasyMDE for create_post and edit_post forms
+    const markdownEditor = document.getElementById('markdown-editor');
+    if (markdownEditor) {
+        const easyMDE = new EasyMDE({
+            element: markdownEditor,
+            spellChecker: false,
+            status: false,
+            forceSync: true,
+            previewRender: function(plainText) {
+                // Convert Markdown to HTML
+                const html = this.markdown(plainText);
+                // Create a temporary container for MathJax
+                const container = document.createElement('div');
+                container.innerHTML = html;
+                // Trigger MathJax rendering
+                if (typeof MathJax !== 'undefined') {
+                    MathJax.typesetPromise([container]).then(() => {
+                        // Ensure MathJax renders equations
+                    });
+                }
+                return container.innerHTML;
+            }
+        });
+        // Debug: Log EasyMDE value on change
+        easyMDE.codemirror.on('change', () => {
+            console.log('EasyMDE value:', easyMDE.value());
+            markdownEditor.value = easyMDE.value();
+        });
+    }
+
+    // Debug form submission
+    const forms = document.querySelectorAll('#create-post-form, #edit-post-form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            console.log('Form submission triggered:', form.id);
+            const formData = new FormData(form);
+            console.log('Form data:', Object.fromEntries(formData));
+            if (markdownEditor && easyMDE) {
+                markdownEditor.value = easyMDE.value();
+            }
+        });
+    });
+
     // Password matching validation for registration form
     const registerForm = document.querySelector('form[action="/register"]');
     if (registerForm) {
@@ -70,13 +77,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest' // Indicate AJAX request
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
                 const result = await response.json();
                 if (response.ok) {
                     if (result.approved) {
-                        // Append comment to the DOM
                         const commentsSection = document.querySelector('.comments-list') || document.createElement('div');
                         if (!commentsSection.classList.contains('comments-list')) {
                             commentsSection.classList.add('comments-list');

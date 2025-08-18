@@ -1,11 +1,27 @@
 {% extends 'base.html' %}
+{% block title %}Edit Post{% endblock %}
 {% block content %}
-<h1>Edit Post</h1>  <!-- change: from "Create New Post" to "Edit Post" -->
-<form action="" method="post">
+<h1>Edit Post</h1>
+<form action="" method="post" id="edit-post-form">
     {{ form.hidden_tag() }}
-    <div class="mb-3">{{ form.title.label }} {{ form.title(class="form-control") }}</div>
-    <div class="mb-3">{{ form.body.label }} {{ form.body(class="form-control", rows=10) }}</div>
-    <div class="mb-3">{{ form.category.label }} {{ form.category(class="form-select") }}</div>
+    <div class="mb-3">
+        {{ form.title.label }} {{ form.title(class="form-control") }}
+        {% for error in form.title.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.body.label }} {{ form.body(class="form-control", id="markdown-editor") }}
+        {% for error in form.body.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.category.label }} {{ form.category(class="form-select") }}
+        {% for error in form.category.errors %}
+            <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+    </div>
     {{ form.submit(class="btn btn-primary") }}
 </form>
 {% endblock %}

@@ -27,21 +27,21 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">学习博客</a>
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">首页Home</a></li>
                 {% if current_user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.create_post') }}">New Post</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.categories') }}">Categories</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">Profile</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.create_post') }}">新的发表New Post</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.categories') }}">文章类型Categories</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}">总览Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">个人信息Profile</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.logout') }}">退出Logout</a></li>
                 {% else %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.login') }}">Login</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.register') }}">Register</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.login') }}">登入Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.register') }}">注册Register</a></li>
                 {% endif %}
             </ul>
             <form class="d-flex" action="{{ url_for('main.search') }}">
                 <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <button class="btn btn-outline-success" type="submit">查找Search</button>
             </form>
         </div>
     </nav>
