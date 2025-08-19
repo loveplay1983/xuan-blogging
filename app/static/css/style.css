@@ -137,3 +137,11 @@ a:hover {
     font-size: 1.1em;
     color: #333;
 }
+
+
+.post-content img {
+    max-width: 800px;   /* control image size */
+    height: auto;       /* keep aspect ratio */
+    display: block;     /* makes margin work */
+    margin: 1rem auto;  /* centers image */
+}
