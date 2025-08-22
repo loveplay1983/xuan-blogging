@@ -23,6 +23,46 @@ ALLOWED_ATTRIBUTES = {
     'img': ['src', 'alt']
 }
 
+# Allowed extension for data uplaoding
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@bp.route('/')
+@bp.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return "No file part", 400
+        file = request.files['file']
+        if file.filename == '':
+            return "No selected file", 400
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            return f"✅ File uploaded! Access it at https://www.loveplay1983.us.kg/static/uploads/{filename}"
+        return "Invalid file type", 400
+    
+    # Render the simple HTML upload page
+    return render_template("upload.html")
+
+
+# @bp.route('/')
+# @bp.route('/upload', methods=['POST'])
+# def upload_file():
+#     form = UploadForm()
+#     if form.validate_on_submit():
+#         f = form.file.data
+#         filename = secure_filename(f.filename)
+#         filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+#         f.save(filepath)
+#         return f"✅ Uploaded! Access it at /uploads/{filename}"
+#     return render_template('upload.html', form=form)
+
+
+
 @bp.route('/')
 @bp.route('/index', methods=['GET'])
 def index():

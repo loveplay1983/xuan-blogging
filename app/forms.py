@@ -49,3 +49,12 @@ class CategoryForm(FlaskForm):
     def validate_name(self, name):
         if Category.query.filter_by(name=name.data).first():
             raise ValidationError('Category name already exists.')
+
+
+# upload
+# class UploadForm(FlaskForm):
+#     file = FileField('Image', validators=[
+#         FileRequired(),
+#         FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')
+#     ])
+#     submit = SubmitField('Upload')
