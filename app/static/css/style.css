@@ -139,8 +139,8 @@ a:hover {
 }
 
 
-.post-content img {
-    max-width: 800px;   /* control image size */
+.post-content p img {
+    max-width: 666px;   /* control image size */
     height: auto;       /* keep aspect ratio */
     display: block;     /* makes margin work */
     margin: 1rem auto;  /* centers image */

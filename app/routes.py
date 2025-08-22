@@ -29,7 +29,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@bp.route('/')
+# @bp.route('/')
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
