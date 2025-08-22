@@ -37,4 +37,6 @@ WTForms==3.2.1
 waitress-serve --port=5000 --call "app:create_app"
 ```
 
+### 3. Blog: https://www.loveplay1983.us.kg/index
+
  
