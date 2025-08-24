@@ -46,7 +46,7 @@
         </div>
     </nav>
     <!-- Add Audio Element (Hidden) -->
-    <audio id="bg-music" loop src="{{ url_for('static', filename='audio/Rain in Jiang (Violin Remix).mp3') }}" ></audio>
+    <audio id="bg-music" loop src="{{ url_for('static', filename='audio/lofi0.MP3') }}" ></audio>
     <div class="container mt-3">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -65,22 +65,38 @@
     <!-- Add JS for Music and AJAX Persistence -->
     <script>
         // Music Control
-        document.addEventListener('DOMContentLoaded', () => {
-            const audio = document.getElementById('bg-music');
-            const muted = localStorage.getItem('muted') === 'true';
-            audio.muted = muted;
-            if (!muted) {
-                audio.play().catch(e => console.log('Autoplay prevented:', e));
-            }
-            const muteBtn = document.getElementById('mute-btn');
-            muteBtn.addEventListener('click', () => {
-                audio.muted = !audio.muted;
-                localStorage.setItem('muted', audio.muted);
-                muteBtn.textContent = audio.muted ? 'Unmute Music' : 'Mute Music';
-            });
-            muteBtn.textContent = muted ? 'Unmute Music' : 'Mute Music';
-        });
+	document.addEventListener('DOMContentLoaded', () => {
+        const audio = document.getElementById('bg-music');
+        const muteBtn = document.getElementById('mute-btn');
 
+        // Restore muted state
+        const muted = localStorage.getItem('muted') === 'true';
+        audio.muted = muted;
+
+        // Restore playback time if available
+        const savedTime = localStorage.getItem('musicTime');
+        if (savedTime) {
+            audio.currentTime = parseFloat(savedTime);
+        }
+
+        // Try autoplay (browser may block, but works if user interacted)
+        audio.play().catch(err => console.log('Autoplay blocked:', err));
+
+        // Save current time every 3s
+        setInterval(() => {
+            if (!audio.paused) {
+                localStorage.setItem('musicTime', audio.currentTime);
+            }
+        }, 0);
+
+        // Mute button handler
+        muteBtn.addEventListener('click', () => {
+            audio.muted = !audio.muted;
+            localStorage.setItem('muted', audio.muted);
+            muteBtn.textContent = audio.muted ? 'Unmute Music' : 'Mute Music';
+        });
+        muteBtn.textContent = muted ? 'Unmute Music' : 'Mute Music';
+});    
         // AJAX for Persistent Navigation
         async function loadContent(url) {
             try {
