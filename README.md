@@ -34,9 +34,72 @@ WTForms==3.2.1
 
 ### 2. Deployment
 ```shell
-waitress-serve --port=5000 --call "app:create_app"
+waitress-serve --port=5000 --call "app:create_app"  # Windows
+gunicorn -w 4 --bind unix:/home/loveplay1983/projects/xuan-blogging/otherData/sock-file/serve.sock --access-logfile - --error-logfile - "app:create_app()" # Linux
+
+```
+### 3. Gunicorn service
+```shell
+[Unit]
+Description=Gunicorn instance for Flask Blog
+After=network.target
+
+[Service]
+User=loveplay1983
+Group=loveplay1983
+WorkingDirectory=/home/loveplay1983/projects/xuan-blogging
+Environment="PATH=/home/loveplay1983/projects/xuan-blogging/venv/bin"
+ExecStart=/home/loveplay1983/projects/xuan-blogging/venv/bin/gunicorn -w 4 --bind unix:/home/loveplay1983/projects/xuan-blogging/otherData/sock-file/serve.sock --access-logfile - --error-logfile - "app:create_app()"
+[Install]
+WantedBy=multi-user.target
+
 ```
 
-### 3. Blog: https://www.loveplay1983.us.kg/index
+### 4. Nginx configuration
+```shell
+server {
+    listen 443 ssl; # managed by Certbot
+    server_name loveplay1983.us.kg www.loveplay1983.us.kg;
+
+    ssl_certificate /etc/letsencrypt/live/loveplay1983.us.kg/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/loveplay1983.us.kg/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+    # Proxy Gunicorn app
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/loveplay1983/projects/xuan-blogging/otherData/sock-file/serve.sock;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Static files
+    location /static/ {
+        alias /home/loveplay1983/projects/xuan-blogging/app/static/;
+        access_log off;
+        expires 30d;
+    }
+
+    # upload folder
+    location /static/uploads/ {
+        alias /home/loveplay1983/projects/xuan-blogging/app/static/uploads/;
+        autoindex on;
+        autoindex_exact_size off;   # show human-readable sizes
+        autoindex_localtime on;     # show file modification time
+    }
+}
+
+server {
+    listen 80;
+    server_name loveplay1983.us.kg www.loveplay1983.us.kg;
+    return 301 https://$host$request_uri;
+}
+
+```
+
+### 5. [博客演示](https://www.loveplay1983.us.kg/index)
 
  
