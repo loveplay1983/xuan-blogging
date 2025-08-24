@@ -46,7 +46,7 @@
         </div>
     </nav>
     <!-- Add Audio Element (Hidden) -->
-    <audio id="bg-music" loop src="{{ url_for('static', filename='audio/lofi0.MP3') }}" ></audio>
+    <audio autoplay id="bg-music" loop src="{{ url_for('static', filename='audio/lofi0.MP3') }}" ></audio>
     <div class="container mt-3">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -64,14 +64,15 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <!-- Add JS for Music and AJAX Persistence -->
     <script>
-        // Music Control
-	document.addEventListener('DOMContentLoaded', () => {
+    // Music Control
+    document.addEventListener('DOMContentLoaded', () => {
         const audio = document.getElementById('bg-music');
         const muteBtn = document.getElementById('mute-btn');
 
-        // Restore muted state
-        const muted = localStorage.getItem('muted') === 'true';
-        audio.muted = muted;
+        // Initialize muted state from localStorage or default to muted
+        let isMuted = localStorage.getItem('muted') === 'true';
+        audio.muted = isMuted;
+        muteBtn.textContent = isMuted ? 'Unmute Music' : 'Mute Music';
 
         // Restore playback time if available
         const savedTime = localStorage.getItem('musicTime');
@@ -79,58 +80,76 @@
             audio.currentTime = parseFloat(savedTime);
         }
 
-        // Try autoplay (browser may block, but works if user interacted)
-        audio.play().catch(err => console.log('Autoplay blocked:', err));
+        // Function to attempt playing the audio
+        const tryPlayAudio = () => {
+            audio.play().catch(err => console.log('Autoplay blocked:', err));
+        };
 
-        // Save current time every 3s
+        // Try initial playback (likely blocked by browser)
+        tryPlayAudio();
+
+        // Save current time every 3 seconds
         setInterval(() => {
             if (!audio.paused) {
                 localStorage.setItem('musicTime', audio.currentTime);
             }
-        }, 0);
+        }, 3000);
 
         // Mute button handler
         muteBtn.addEventListener('click', () => {
-            audio.muted = !audio.muted;
-            localStorage.setItem('muted', audio.muted);
-            muteBtn.textContent = audio.muted ? 'Unmute Music' : 'Mute Music';
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            localStorage.setItem('muted', isMuted);
+            muteBtn.textContent = isMuted ? 'Unmute Music' : 'Mute Music';
         });
-        muteBtn.textContent = muted ? 'Unmute Music' : 'Mute Music';
-});    
-        // AJAX for Persistent Navigation
-        async function loadContent(url) {
-            try {
-                const response = await fetch(url);
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                document.title = doc.title;
-                document.getElementById('main-content').innerHTML = doc.querySelector('#main-content').innerHTML;
-                // Re-flash messages or other dynamic elements if needed
-                // Re-typeset MathJax
-                if (typeof MathJax !== 'undefined') {
-                    MathJax.typesetPromise();
-                }
-                // Re-init EasyMDE if on edit pages (optional, add if needed)
-            } catch (e) {
-                console.error('AJAX load failed:', e);
-                window.location.href = url; // Fallback to full load
+
+        // Play music on first user interaction (e.g., click anywhere)
+        let hasInteracted = false;
+        document.addEventListener('click', () => {
+            if (!hasInteracted && isMuted) {
+                hasInteracted = true;
+                isMuted = false;
+                audio.muted = false;
+                localStorage.setItem('muted', isMuted);
+                muteBtn.textContent = 'Mute Music';
+                tryPlayAudio();
             }
+        }, { once: true }); // Run only once
+    });
+
+    // AJAX for Persistent Navigation
+    async function loadContent(url) {
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            document.title = doc.title;
+            document.getElementById('main-content').innerHTML = doc.querySelector('#main-content').innerHTML;
+            // Re-typeset MathJax
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        } catch (e) {
+            console.error('AJAX load failed:', e);
+            window.location.href = url; // Fallback to full load
         }
+    }
 
-        document.addEventListener('click', e => {
-            if (e.target.tagName === 'A' && e.target.href.startsWith(location.origin) && !e.target.dataset.noAjax) {
-                e.preventDefault();
-                history.pushState({ url: e.target.href }, '', e.target.href);
-                loadContent(e.target.href);
-            }
-        });
+    document.addEventListener('click', e => {
+        if (e.target.tagName === 'A' && e.target.href.startsWith(location.origin) && !e.target.dataset.noAjax) {
+            e.preventDefault();
+            history.pushState({ url: e.target.href }, '', e.target.href);
+            loadContent(e.target.href);
+        }
+    });
 
-        window.addEventListener('popstate', e => {
-            if (e.state && e.state.url) {
-                loadContent(e.state.url);
-            }
-        });
+    window.addEventListener('popstate', e => {
+        if (e.state && e.state.url) {
+            loadContent(e.state.url);
+        }
+    });
     </script>
 </body>
 </html>
+
