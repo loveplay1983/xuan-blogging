@@ -23,23 +23,23 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">学习博客</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">抗衰秘诀▃不断学习▃\(^o^)/~</a>
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">首页Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">首页</a></li>
                 {% if current_user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.create_post') }}">新的发表New Post</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.categories') }}">文章类型Categories</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}">总览Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">个人信息Profile</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.logout') }}">退出Logout</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.create_post') }}">新增</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.categories') }}">分组</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.dashboard') }}">总览</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.profile') }}">用户</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.logout') }}">登出</a></li>
                 {% else %}
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.login') }}">登入Login</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.register') }}">注册Register</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.login') }}">登入</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.register') }}">注册</a></li>
                 {% endif %}
             </ul>
             <form class="d-flex" action="{{ url_for('main.search') }}">
                 <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">查找Search</button>
+                <button class="btn btn-outline-success" type="submit">查找</button>
             </form>
             <!-- Add Mute Button Here -->
             <button id="mute-btn" class="btn btn-secondary ms-2">Mute Music</button>
