@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
-        tex2jax: {  
+        tex2jax: {
             inlineMath: [ ['$','$'], ["\\(","\\)"] ],
             processEscapes: true
         }
@@ -23,7 +23,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">抗衰秘诀▃不断学习▃\(^o^)/~</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">\(^o^)/~学习〓抗衰</a>
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">首页</a></li>
                 {% if current_user.is_authenticated %}
@@ -39,7 +39,7 @@
             </ul>
             <form class="d-flex" action="{{ url_for('main.search') }}">
                 <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">查找</button>
+                <button class="btn btn-outline-success" type="submit">查找Search</button>
             </form>
             <!-- Add Mute Button Here -->
             <button id="mute-btn" class="btn btn-secondary ms-2">Mute Music</button>
@@ -174,4 +174,3 @@
 </script>
 </body>
 </html>
-
