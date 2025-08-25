@@ -107,23 +107,32 @@ a:hover {
     margin-bottom: 1rem;
     padding-left: 2rem;
 }
+/* Blockquotes */
 .post-content blockquote {
-    border-left: 4px solid #007bff;
-    padding-left: 1rem;
-    color: #555;
+    background-color: #2e3440;   /* dark background */
+    color: #eceff4;              /* light text */
+    border-left: 4px solid #88c0d0;
+    padding: 1rem;
     margin: 1rem 0;
+    border-radius: 0.5rem;
 }
 .post-content code {
     background-color: #f8f9fa;
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
 }
+/* Code blocks (```lang) */
 .post-content pre {
-    background-color: #f8f9fa;
+    background-color: #2e3440;   /* dark background */
+    color: #eceff4;              /* light text */
     padding: 1rem;
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
     overflow-x: auto;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
 }
+
 .post-content a {
     color: #007bff;
     text-decoration: underline;
@@ -136,4 +145,61 @@ a:hover {
 .post-content .MathJax {
     font-size: 1.1em;
     color: #333;
+}
+
+
+.post-content p img {
+    max-width: 666px;   /* control image size */
+    height: auto;       /* keep aspect ratio */
+    display: block;     /* makes margin work */
+    margin: 1rem auto;  /* centers image */
+}
+
+
+/* Code blocks (triple backticks) */
+.post-content pre code {
+    background-color: #2e3440;   /* dark background */
+    color: #eceff4;              /* light text */
+    display: block;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: monospace;
+}
+
+/* Inline code (single backticks) */
+.post-content :not(pre) > code {
+    background-color: #e5e9f0;   /* light gray */
+    color: #2e3440;              /* dark text */
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.95em;
+    font-family: monospace;
+}
+
+
+
+/*.post-content hr {
+/*    border: none;                  /* remove default border */
+/*    height: auto;
+/*    line-height: 1;                /* align text */
+/*    text-align: center;
+/*    margin: 1em 0;
+/*}
+/*
+/*.post-content hr::after {
+/*    content: "__________________________________________";
+/*    color: #555;                   /* make it subtle */
+/*    font-family: monospace;        /* keep uniform underscores */
+/*    font-size: 14px;
+/*}
+ *
+*/
+
+.post-content hr {
+    all: unset;
+    display: block;
+    /*border: none;*/                      /* remove default border */
+    border-top: 2px solid #bbb !important;     /* real line, thickness=3px, color=dark gray */
+    margin: 2.0em 0;                   /* spacing */
 }

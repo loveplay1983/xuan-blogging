@@ -113,3 +113,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+// data upload
+const form = document.getElementById("uploadForm");
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+
+    try {
+    const response = await fetch("/upload", {
+        method: "POST",
+        body: formData
+    });
+    const text = await response.text();
+    document.getElementById("result").innerHTML = text;
+    } catch (err) {
+    document.getElementById("result").innerHTML = "Upload failed: " + err;
+    }
+});
+

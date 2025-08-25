@@ -16,7 +16,8 @@ bp = Blueprint('main', __name__)
 
 ALLOWED_TAGS = [
     'p', 'br', 'strong', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img'
+    'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img', 'hr', 
+    'table', 'thead', 'tbody', 'tr', 'th', 'td'
 ]
 ALLOWED_ATTRIBUTES = {
     'a': ['href', 'title'],

@@ -132,3 +132,4 @@ form.addEventListener("submit", async (event) => {
     document.getElementById("result").innerHTML = "Upload failed: " + err;
     }
 });
+

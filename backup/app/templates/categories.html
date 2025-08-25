@@ -17,7 +17,7 @@
 <ul class="list-group">
     {% for category in categories %}
     <li class="list-group-item d-flex justify-content-between align-items-center">
-        {{ category.name }}
+        <a href="{{ url_for('main.category', category_id=category.id) }}">{{ category.name }}</a>
         <form action="{{ url_for('main.delete_category', category_id=category.id) }}" method="post" style="display:inline;">
             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete {{ category.name }}?')">Delete</button>
         </form>
