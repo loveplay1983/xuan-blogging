@@ -2,25 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}My Personal Blog{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
     <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
-
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
-        tex2jax: {
+        tex2jax: {  
             inlineMath: [ ['$','$'], ["\\(","\\)"] ],
             processEscapes: true
         }
         });
     </script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js" async></script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -43,8 +41,12 @@
                 <input class="form-control me-2" type="search" name="query" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">查找Search</button>
             </form>
+            <!-- Add Mute Button Here -->
+            <button id="mute-btn" class="btn btn-secondary ms-2">Mute Music</button>
         </div>
     </nav>
+    <!-- Add Audio Element (Hidden) -->
+    <audio autoplay id="bg-music" loop src="{{ url_for('static', filename='audio/lofi0.MP3') }}" ></audio>
     <div class="container mt-3">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -53,9 +55,123 @@
         </div>
         {% endif %}
         {% endwith %}
-        {% block content %}{% endblock %}
+        <!-- Wrap Content for AJAX -->
+        <div id="main-content">
+            {% block content %}{% endblock %}
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Add JS for Music and AJAX Persistence -->
+    <script>
+    // Music Control
+    document.addEventListener('DOMContentLoaded', () => {
+        const audio = document.getElementById('bg-music');
+        const muteBtn = document.getElementById('mute-btn');
+
+        // Initialize muted state from localStorage or default to muted
+        let isMuted = localStorage.getItem('muted') !== 'false'; // Default to true (muted)
+        audio.muted = isMuted;
+        muteBtn.textContent = isMuted ? 'Unmute Music' : 'Mute Music';
+
+        // Persist hasInteracted across loads/sessions
+        let hasInteracted = localStorage.getItem('hasInteracted') === 'true';
+
+        // Restore playback time if available
+        const savedTime = localStorage.getItem('musicTime');
+        if (savedTime) {
+            audio.currentTime = parseFloat(savedTime);
+        }
+
+        // Function to attempt playing the audio
+        const tryPlayAudio = () => {
+            if (!isMuted) {
+                audio.play().catch(err => console.log('Autoplay blocked:', err));
+            }
+        };
+
+        // Try initial playback (likely blocked by browser)
+        tryPlayAudio();
+
+        // Save current time every 3 seconds
+        setInterval(() => {
+            if (!audio.paused) {
+                localStorage.setItem('musicTime', audio.currentTime);
+            }
+        }, 3000);
+
+        // Mute button handler
+        muteBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            audio.muted = isMuted;
+            localStorage.setItem('muted', isMuted);
+            muteBtn.textContent = isMuted ? 'Unmute Music' : 'Mute Music';
+            if (!isMuted) {
+                tryPlayAudio(); // Play audio when unmuted
+            }
+        });
+
+        // Play music on first user interaction (any click, including links) if not already interacted
+        if (!hasInteracted) {
+            document.addEventListener('click', (e) => {
+                // Skip mute button clicks to avoid double-toggle
+                const isMuteButton = e.target === muteBtn || muteBtn.contains(e.target);
+                if (!isMuteButton) {
+                    hasInteracted = true;
+                    localStorage.setItem('hasInteracted', 'true');
+                    isMuted = false; // Unmute on first interaction
+                    audio.muted = false;
+                    localStorage.setItem('muted', isMuted);
+                    muteBtn.textContent = 'Mute Music';
+                    tryPlayAudio();
+                    console.log('First interaction triggered: Music should play'); // Debugging
+                }
+            }, { once: true }); // Run only once
+        }
+
+        // Always-on listener to resume playback on clicks if not muted and audio is paused (e.g., due to browser blocks or pauses)
+        document.addEventListener('click', () => {
+            if (!isMuted && audio.paused) {
+                tryPlayAudio();
+                console.log('Resuming playback on click (if not muted and paused)'); // Debugging
+            }
+        });
+
+    });
+
+    // AJAX for Persistent Navigation
+    async function loadContent(url) {
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            document.title = doc.title;
+            document.getElementById('main-content').innerHTML = doc.querySelector('#main-content').innerHTML;
+            // Re-typeset MathJax
+            if (typeof MathJax !== 'undefined') {
+                MathJax.typesetPromise();
+            }
+        } catch (e) {
+            console.error('AJAX load failed:', e);
+            window.location.href = url; // Fallback to full load
+        }
+    }
+
+    document.addEventListener('click', e => {
+        if (e.target.tagName === 'A' && e.target.href.startsWith(location.origin) && !e.target.dataset.noAjax) {
+            e.preventDefault();
+            history.pushState({ url: e.target.href }, '', e.target.href);
+            loadContent(e.target.href);
+        }
+    });
+
+    window.addEventListener('popstate', e => {
+        if (e.state && e.state.url) {
+            loadContent(e.state.url);
+        }
+    });
+</script>
 </body>
 </html>
+

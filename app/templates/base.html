@@ -70,9 +70,12 @@
         const muteBtn = document.getElementById('mute-btn');
 
         // Initialize muted state from localStorage or default to muted
-        let isMuted = localStorage.getItem('muted') === 'true';
+        let isMuted = localStorage.getItem('muted') !== 'false'; // Default to true (muted)
         audio.muted = isMuted;
         muteBtn.textContent = isMuted ? 'Unmute Music' : 'Mute Music';
+
+        // Persist hasInteracted across loads/sessions
+        let hasInteracted = localStorage.getItem('hasInteracted') === 'true';
 
         // Restore playback time if available
         const savedTime = localStorage.getItem('musicTime');
@@ -82,7 +85,9 @@
 
         // Function to attempt playing the audio
         const tryPlayAudio = () => {
-            audio.play().catch(err => console.log('Autoplay blocked:', err));
+            if (!isMuted) {
+                audio.play().catch(err => console.log('Autoplay blocked:', err));
+            }
         };
 
         // Try initial playback (likely blocked by browser)
@@ -101,20 +106,37 @@
             audio.muted = isMuted;
             localStorage.setItem('muted', isMuted);
             muteBtn.textContent = isMuted ? 'Unmute Music' : 'Mute Music';
+            if (!isMuted) {
+                tryPlayAudio(); // Play audio when unmuted
+            }
         });
 
-        // Play music on first user interaction (e.g., click anywhere)
-        let hasInteracted = false;
+        // Play music on first user interaction (any click, including links) if not already interacted
+        if (!hasInteracted) {
+            document.addEventListener('click', (e) => {
+                // Skip mute button clicks to avoid double-toggle
+                const isMuteButton = e.target === muteBtn || muteBtn.contains(e.target);
+                if (!isMuteButton) {
+                    hasInteracted = true;
+                    localStorage.setItem('hasInteracted', 'true');
+                    isMuted = false; // Unmute on first interaction
+                    audio.muted = false;
+                    localStorage.setItem('muted', isMuted);
+                    muteBtn.textContent = 'Mute Music';
+                    tryPlayAudio();
+                    console.log('First interaction triggered: Music should play'); // Debugging
+                }
+            }, { once: true }); // Run only once
+        }
+
+        // Always-on listener to resume playback on clicks if not muted and audio is paused (e.g., due to browser blocks or pauses)
         document.addEventListener('click', () => {
-            if (!hasInteracted && isMuted) {
-                hasInteracted = true;
-                isMuted = false;
-                audio.muted = false;
-                localStorage.setItem('muted', isMuted);
-                muteBtn.textContent = 'Mute Music';
+            if (!isMuted && audio.paused) {
                 tryPlayAudio();
+                console.log('Resuming playback on click (if not muted and paused)'); // Debugging
             }
-        }, { once: true }); // Run only once
+        });
+
     });
 
     // AJAX for Persistent Navigation
@@ -149,7 +171,7 @@
             loadContent(e.state.url);
         }
     });
-    </script>
+</script>
 </body>
 </html>
 

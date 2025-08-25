@@ -7,17 +7,62 @@ from app.models import User, Post, Category, Comment
 from app.forms import LoginForm, RegistrationForm, PostForm, CommentForm, ProfileForm, CategoryForm
 import markdown
 import bleach
+from werkzeug.utils import secure_filename
+import os
+from flask import current_app  # Add this for accessing app config in routes
+import uuid  # Move this from inside the if block to the top (or add if missing)
 
 bp = Blueprint('main', __name__)
 
 ALLOWED_TAGS = [
     'p', 'br', 'strong', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img'
+    'ul', 'ol', 'li', 'a', 'blockquote', 'code', 'pre', 'img', 'hr',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td'
 ]
 ALLOWED_ATTRIBUTES = {
     'a': ['href', 'title'],
     'img': ['src', 'alt']
 }
+
+# Allowed extension for data uplaoding
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# @bp.route('/')
+@bp.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            return "No file part", 400
+        file = request.files['file']
+        if file.filename == '':
+            return "No selected file", 400
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            return f"✅ File uploaded! Access it at https://www.loveplay1983.us.kg/static/uploads/{filename}"
+        return "Invalid file type", 400
+    
+    # Render the simple HTML upload page
+    return render_template("upload.html")
+
+
+# @bp.route('/')
+# @bp.route('/upload', methods=['POST'])
+# def upload_file():
+#     form = UploadForm()
+#     if form.validate_on_submit():
+#         f = form.file.data
+#         filename = secure_filename(f.filename)
+#         filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+#         f.save(filepath)
+#         return f"✅ Uploaded! Access it at /uploads/{filename}"
+#     return render_template('upload.html', form=form)
+
+
 
 @bp.route('/')
 @bp.route('/index', methods=['GET'])
@@ -146,12 +191,25 @@ def register():
 def profile():
     form = ProfileForm()
     if form.validate_on_submit():
+        if form.avatar.data:
+            filename = secure_filename(form.avatar.data.filename)
+            # Make unique if needed
+            unique_str = str(uuid.uuid4())[:8]
+            filename = f"{unique_str}_{filename}"
+            form.avatar.data.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            current_user.avatar = filename
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash('Profile updated!')
     elif request.method == 'GET':
         form.about_me.data = current_user.about_me
-    return render_template('profile.html', form=form)
+    # Render about_me as Markdown
+    about_html = bleach.clean(
+        markdown.markdown(current_user.about_me or '', extensions=['extra', 'codehilite']),
+        tags=ALLOWED_TAGS,
+        attributes=ALLOWED_ATTRIBUTES
+    ) if current_user.about_me else ''
+    return render_template('profile.html', form=form, about_html=about_html)
 
 @bp.route('/dashboard')
 @login_required
@@ -201,3 +259,13 @@ def delete_category(category_id):
     db.session.commit()
     flash('Category deleted!')
     return redirect(url_for('main.categories'))
+
+
+@bp.route('/category/<int:category_id>', methods=['GET'])
+def category(category_id):
+    category = Category.query.get_or_404(category_id)
+    page = request.args.get('page', 1, type=int)
+    posts = category.posts.order_by(Post.timestamp.desc()).paginate(page=page, per_page=5, error_out=False)
+    next_url = url_for('main.category', category_id=category_id, page=posts.next_num) if posts.has_next else None
+    prev_url = url_for('main.category', category_id=category_id, page=posts.prev_num) if posts.has_prev else None
+    return render_template('category.html', category=category, posts=posts.items, next_url=next_url, prev_url=prev_url)

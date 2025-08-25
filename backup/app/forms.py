@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, ValidationError
 from app.models import User, Category
+from flask_wtf.file import FileField, FileAllowed
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -37,7 +38,8 @@ class CommentForm(FlaskForm):
     submit = SubmitField('Post Comment')
 
 class ProfileForm(FlaskForm):
-    about_me = StringField('About Me', validators=[Length(min=0, max=140)])
+    about_me = TextAreaField('About Me')  # Changed to TextAreaField, no length limit
+    avatar = FileField('Profile Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
     submit = SubmitField('Update')
 
 class CategoryForm(FlaskForm):
@@ -47,3 +49,12 @@ class CategoryForm(FlaskForm):
     def validate_name(self, name):
         if Category.query.filter_by(name=name.data).first():
             raise ValidationError('Category name already exists.')
+
+
+# upload
+# class UploadForm(FlaskForm):
+#     file = FileField('Image', validators=[
+#         FileRequired(),
+#         FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')
+#     ])
+#     submit = SubmitField('Upload')
